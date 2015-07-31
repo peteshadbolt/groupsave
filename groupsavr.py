@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
 import resources
-from database import db_session
+import database
 
 
 def get_app():
@@ -10,7 +10,7 @@ def get_app():
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
-        db_session.remove()
+        db.session.remove()
 
     # Setup the API resource routing here
     api.add_resource(resources.ThingList, '/things')
