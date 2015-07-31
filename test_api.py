@@ -4,11 +4,10 @@ import groupsavr
 import unittest
 import database
 import os
+import models
 
 class APITestCase(unittest.TestCase):
     def setUp(self):
-        #db_fd = tempfile.mkstemp()
-        #self.db_fd, groupsavr.app.config['DATABASE'] = db_fd
         app = groupsavr.get_app()
         app.config['TESTING'] = True
         self.client = app.test_client()
@@ -18,8 +17,13 @@ class APITestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_database_setup(self):
-        pass
+    def test_list_stations(self):
+        s = models.Station('Brighton')
+        groupsavr.db_session.add(s)
+        groupsavr.db_session.commit()
+        all_stations = models.Station.query.all()
+        print all_stations
+        return all_stations
 
 if __name__ == '__main__':
     import nose
