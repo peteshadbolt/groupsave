@@ -1,5 +1,7 @@
+import sqlite3
 from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
+from contextlib import closing
 
 app = Flask(__name__)
 api = Api(app)
@@ -16,6 +18,30 @@ def abort_if_todo_doesnt_exist(todo_id):
 
 parser = reqparse.RequestParser()
 parser.add_argument('task')
+
+def connect_db():
+    return sqlite3.connect(app.config['DATABASE'])
+
+
+def init_db():
+    with closing(connect_db()) as db:
+        with app.open_resource('schema.sql') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
+
+
+def get_database_connection():
+    db = getattr(g, 'db', None)
+    if db is None:
+        g.db = db = connect_db()
+    return db
+
+
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
 
 
 class Todo(Resource):
