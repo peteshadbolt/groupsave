@@ -1,10 +1,7 @@
-import tempfile
-from flask import session
-import groupsavr
 import unittest
-import database
-import os
+import groupsavr
 import models
+import database as db
 
 class APITestCase(unittest.TestCase):
     def setUp(self):
@@ -12,15 +9,14 @@ class APITestCase(unittest.TestCase):
         app.config['TESTING'] = True
         self.client = app.test_client()
         self.app = app
-        database.init_db()
+        db.init_db()
+        #db.create_all()
 
     def tearDown(self):
-        pass
+        db.session.remove()
+        #db.drop_all()
 
     def test_list_stations(self):
-        s = models.Station('Brighton')
-        groupsavr.db_session.add(s)
-        groupsavr.db_session.commit()
         all_stations = models.Station.query.all()
         print all_stations
         return all_stations
