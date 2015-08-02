@@ -20,33 +20,37 @@ class Station(db.Model):
 
 
 class Thing(Resource):
-
     """ Shows a single thing and lets you delete a thing """
-
     def get(self, thing_id):
-        return "get"
+        s = Station.query.filter(Station.name == thing_id).first()
+        return "Here is information about " + s.name
 
     def delete(self, thing_id):
-        return "delete"
+        s = Station.query.filter(Station.name == thing_id).first()
+        db.session.delete(s)
+        db.session.commit()
+        return "Deleted {:}".format(thing_id), 200
 
     def put(self, thing_id):
-        parser = reqparse.RequestParser()
-        parser.add_argument('task')
-        args = parser.parse_args()
-        task = {'task': args['task']}
         return "put", 201
 
 
 class ThingList(Resource):
-
     """ Shows a list of all things, and lets you POST to add new things """
-
     def get(self):
+        """ Get a list of all stations """
         all_stations = Station.query.all()
         return [s.name for s in all_stations]
 
     def post(self):
-        return "post list", 201
+        """ Add a new station """
+        parser = reqparse.RequestParser()
+        parser.add_argument('name')
+        args = parser.parse_args()
+        s = Station(**args)
+        db.session.add(s)
+        db.session.commit()
+        return "Added {:}".format(s.name), 201
 
 
 # Setup the API resource routing here
@@ -55,5 +59,4 @@ api.add_resource(Thing, '/things/<thing_id>')
 
 # Go
 if __name__ == '__main__':
-    print db
     app.run(debug=True)
