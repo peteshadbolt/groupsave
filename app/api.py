@@ -1,23 +1,7 @@
-from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
-from flask.ext.sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config.from_object('config')
-api = Api(app)
-db = SQLAlchemy(app)
-
-
-class Station(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True)
-
-    def __init__(self, name=None):
-        self.name = name.lower().strip()
-
-    def __repr__(self):
-        return '<Station {L}>'.format(self.name)
-
+from app import app
+from app import db
+from models import Station
 
 class StationItem(Resource):
     """ Shows a single station and lets you delete a station """
@@ -58,10 +42,7 @@ class StationList(Resource):
             return "Added {:}".format(args.name), 201
 
 
-# Setup the API resource routing here
+# Setup API resource routing 
+api = Api(app)
 api.add_resource(StationList, '/stations')
 api.add_resource(StationItem, '/stations/<station_id>')
-
-# Go
-if __name__ == '__main__':
-    app.run(debug=True)
