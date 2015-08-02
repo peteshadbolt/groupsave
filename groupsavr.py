@@ -7,6 +7,7 @@ app.config.from_object('config')
 api = Api(app)
 db = SQLAlchemy(app)
 
+
 class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
@@ -19,7 +20,9 @@ class Station(db.Model):
 
 
 class Thing(Resource):
+
     """ Shows a single thing and lets you delete a thing """
+
     def get(self, thing_id):
         return "get"
 
@@ -35,7 +38,9 @@ class Thing(Resource):
 
 
 class ThingList(Resource):
+
     """ Shows a list of all things, and lets you POST to add new things """
+
     def get(self):
         all_stations = Station.query.all()
         return [s.name for s in all_stations]
