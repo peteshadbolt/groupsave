@@ -1,3 +1,4 @@
+db_repository/
 .venv/
 *.cfg
 venv/
