@@ -13,30 +13,31 @@ class Station(db.Model):
     name = db.Column(db.String(50), unique=True)
 
     def __init__(self, name=None):
-        self.name = name
+        self.name = name.lower().strip()
 
     def __repr__(self):
-        return '<Station %r>' % (self.name)
+        return '<Station {L}>'.format(self.name)
 
 
-class Thing(Resource):
-    """ Shows a single thing and lets you delete a thing """
-    def get(self, thing_id):
-        s = Station.query.filter(Station.name == thing_id).first()
+class StationItem(Resource):
+    """ Shows a single station and lets you delete a station """
+    def get(self, station_id):
+        station_id = station_id.lower()
+        s = Station.query.filter(Station.name == station_id).first()
         return "Here is information about " + s.name
 
-    def delete(self, thing_id):
-        s = Station.query.filter(Station.name == thing_id).first()
+    def delete(self, station_id):
+        s = Station.query.filter(Station.name == station_id).first()
         db.session.delete(s)
         db.session.commit()
-        return "Deleted {:}".format(thing_id), 200
+        return "Deleted {:}".format(station_id), 200
 
-    def put(self, thing_id):
+    def put(self, station_id):
         return "put", 201
 
 
-class ThingList(Resource):
-    """ Shows a list of all things, and lets you POST to add new things """
+class StationList(Resource):
+    """ Shows a list of all stations, and lets you POST to add new stations """
     def get(self):
         """ Get a list of all stations """
         all_stations = Station.query.all()
@@ -47,15 +48,19 @@ class ThingList(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('name')
         args = parser.parse_args()
-        s = Station(**args)
-        db.session.add(s)
-        db.session.commit()
-        return "Added {:}".format(s.name), 201
+        s2 = Station.query.filter(Station.name == args.name.lower()).first()
+        if s2:
+            return "{:} already exists".format(args.name), 250
+        else:
+            s = Station(**args)
+            db.session.add(s)
+            db.session.commit()
+            return "Added {:}".format(args.name), 201
 
 
 # Setup the API resource routing here
-api.add_resource(ThingList, '/things')
-api.add_resource(Thing, '/things/<thing_id>')
+api.add_resource(StationList, '/stations')
+api.add_resource(StationItem, '/stations/<station_id>')
 
 # Go
 if __name__ == '__main__':

@@ -10,9 +10,9 @@ class APITestCase(unittest.TestCase):
         pass
 
     def test_list_stations(self):
-        response = self.app.get('/things')
+        response = self.app.get('/stations')
         print response.data
-        response = self.app.get('/things/Leeds')
+        response = self.app.get('/stations/leeds')
         print response.data
 
 if __name__ == '__main__':
