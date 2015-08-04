@@ -42,6 +42,13 @@ class StationList(Resource):
             return "Added {:}".format(args.name), 201
 
 
+@api.representation('application/xml')
+def xml(data, code, headers):
+    resp = make_response(convert_data_to_xml(data), code)
+    resp.headers.extend(headers)
+    return resp
+
+
 # Setup API resource routing 
 api = Api(app)
 api.add_resource(StationList, '/stations')
