@@ -1,3 +1,4 @@
+*.rdb
 raw_data/
 app.db
 db_repository/

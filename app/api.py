@@ -1,55 +1,30 @@
 from flask_restful import reqparse, abort, Api, Resource
+from flask import request
 from app import app
 from app import db
-from models import Station
+from matrix import redis
 
 class StationItem(Resource):
-    """ Shows a single station and lets you delete a station """
+    """ Data on a single station """
     def get(self, station_id):
-        station_id = station_id.lower()
-        s = Station.query.filter(Station.name == station_id).first()
-        return "Here is information about " + s.name
+        info = redis.get(station_id.lower())
+        return info
 
-    def delete(self, station_id):
-        s = Station.query.filter(Station.name == station_id).first()
-        db.session.delete(s)
-        db.session.commit()
-        return "Deleted {:}".format(station_id), 200
+class JourneyItem(Resource):
+    """ How many people are making this journey? """
+    def get(self, a, b):
+        key = "{:}/{:}".format(a.lower(), b.lower())
+        members = redis.scard(key)
+        return "{:} -> {:}: {:}".format(a, b, members)
 
-    def put(self, station_id):
-        return "put", 201
-
-
-class StationList(Resource):
-    """ Shows a list of all stations, and lets you POST to add new stations """
-    def get(self):
-        """ Get a list of all stations """
-        all_stations = Station.query.all()
-        return [s.name for s in all_stations]
-
-    def post(self):
-        """ Add a new station """
-        parser = reqparse.RequestParser()
-        parser.add_argument('name')
-        args = parser.parse_args()
-        s2 = Station.query.filter(Station.name == args.name.lower()).first()
-        if s2:
-            return "{:} already exists".format(args.name), 250
-        else:
-            s = Station(**args)
-            db.session.add(s)
-            db.session.commit()
-            return "Added {:}".format(args.name), 201
-
-
-@api.representation('application/xml')
-def xml(data, code, headers):
-    resp = make_response(convert_data_to_xml(data), code)
-    resp.headers.extend(headers)
-    return resp
-
+    def put(self, a, b):
+        key = "{:}/{:}".format(a.lower(), b.lower())
+        user = str(request.remote_addr)
+        print "SADD {:} {:}".format(key, user)
+        count = redis.sadd(key, user)
+        return "Added {:} to {:}".format(user, key), 201
 
 # Setup API resource routing 
 api = Api(app)
-api.add_resource(StationList, '/stations')
-api.add_resource(StationItem, '/stations/<station_id>')
+api.add_resource(StationItem, '/api/<station_id>')
+api.add_resource(JourneyItem, '/api/<a>/<b>')

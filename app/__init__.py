@@ -7,3 +7,4 @@ db = SQLAlchemy(app)
 
 from app import views, models
 from app import api
+from app import matrix
