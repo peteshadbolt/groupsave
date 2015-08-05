@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>station</title>
+    <link href="/static/css.css" rel="stylesheet">
+  </head>
+  <body>
+    <h1>{{fullname}}</h1>
+    <p>Here's a list of active journeys from this station: </p>
+
+    <ul>
+    {% for journey in journeys %}
+        <li> {{ journey.count }} journeys to {{ journey.end_full }}
+    {% endfor %}
+    </ul>
+
+  </body>
+</html>

@@ -5,9 +5,12 @@ def populate():
     """ Pre-populates Redis with a list of stations """
     with open("raw_data/RailReferences.csv") as f:
         for row in csv.reader(f):
-            redis.set(row[2].lower(), row[3])
-    print "{:} keys added to the database".format(redis.dbsize())
+            key = row[2].lower()
+            name = row[3].replace("Rail Station", "")
+            name = name.strip()
+            redis.set(key, name)
 
 redis = StrictRedis()
-populate()
+if redis.dbsize()==0:
+    populate()
 
