@@ -1,0 +1,24 @@
+# Database schema
+
+Here's how we're going to design the database:
+
+`fullname` gives us the full name from a CRS code:
+
+    fullname/bri: Bristol
+
+`journey` is a set of ips waiting for a particular journey, with a timestamp:
+
+    journey/bri/pad/1100: {128.1, 128.2, 128.3}   # Key expires at 1105
+    journey/bri/pad/1600: {128.4}                 # Key expires at 1605
+
+Here, user 128.4 specified that they don't want to leave until 16:00. 
+So when we query that database, we only iterate over a small number of keys.
+
+"Tell me who's leaving right now?":
+
+    SUNION journey/bri/pad/{x} for x in range(1055, 1105)   # Ten GETS
+
+"Tell me who's leaving around 16:00?":
+
+    SUNION journey/bri/pad/{x} for x in range(1555, 1605)   # Ten GETS
+
