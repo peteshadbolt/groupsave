@@ -9,7 +9,6 @@ from app.matrix import redis
 def index():
     return render_template('index.html')
 
-
 @app.route('/view/<crs>')
 def station_view(crs):
     # TODO: this data should come from an api call tbh

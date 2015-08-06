@@ -1,5 +1,5 @@
 from flask_restful import reqparse, abort, Api, Resource
-from flask import request
+from flask import request, make_response
 from app import app
 from app.matrix import *
 import random
@@ -18,7 +18,6 @@ def journey_key(crs1, crs2, minute):
 
 def platform_key(crs, minute):
     return "platform/{:}/{:}".format(crs, minute)
-
 
 class StationItem(Resource):
     """ A single station """
@@ -76,4 +75,3 @@ class JourneyItem(Resource):
 api = Api(app)
 api.add_resource(StationItem, '/api/<crs>')
 api.add_resource(JourneyItem, '/api/<crs1>/<crs2>')
-
