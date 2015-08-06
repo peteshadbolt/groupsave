@@ -3,19 +3,12 @@ from app import app
 from app import api
 from app.matrix import redis
 
-def render_journey(jid):
-    a, b = jid.split("/")
-    afull = redis.get(a)
-    bfull = redis.get(b)
-    count = redis.scard(jid)
-    return {"start": a, "end": b, "start_full": afull, "end_full": bfull, "count": count}
-
 @app.route('/')
 def index():
-    keys = redis.smembers("allkeys")
-    stations = [{"sid":key, "fullname":redis.get(key)} for key in keys]
-    stations = sorted(stations, key = lambda x:x["fullname"])
-    return render_template('index.html', stations=stations)
+    #keys = redis.smembers("allkeys")
+    #stations = [{"sid":key, "fullname":redis.get(key)} for key in keys]
+    #stations = sorted(stations, key = lambda x:x["fullname"])
+    return render_template('index.html')
 
 
 @app.route('/view/<station_id>')
