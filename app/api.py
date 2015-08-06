@@ -32,7 +32,7 @@ class StationItem(Resource):
         timetable = {m: redis.lrange(platform_key(crs, m), 0, -1) for m in minutes}
         timetable = {time.strftime("%A %H:%M", time.gmtime(k)): v for k, v in timetable.items() if len(v)>0}
 
-        return {"name": fullname, "timetable": timetable}
+        return {"crs": crs, "name": fullname, "timetable": timetable}
 
 class JourneyItem(Resource):
     """ A journey from A to B """
@@ -41,8 +41,14 @@ class JourneyItem(Resource):
         minute = int(start_time // 60)
         minutes = xrange(minute - REQUEST_MINUTES, minute + REQUEST_MINUTES * 2)
         keys = [journey_key(crs1, crs2, m) for m in minutes]
-        count = len(redis.sunion(keys))
-        return count
+        ips = redis.sunion(keys)
+        count = len(ips)
+        fullname1 = redis.get(fullname_key(crs1))
+        fullname2 = redis.get(fullname_key(crs2))
+        ips = map(int, ips)
+        start = {"crs":crs1, "name":fullname1}
+        end = {"crs":crs2, "name":fullname2}
+        return {"start": start, "end": end, "count": count, "ips": ips}
 
     def put(self, crs1, crs2):
         ip = str(random.randint(0, 1e2))  #user = str(request.remote_addr)

@@ -5,7 +5,10 @@
     <link href="/static/css.css" rel="stylesheet">
   </head>
   <body>
-    <h1>{{fullnamea}} &#8594; {{fullnameb}}</h1>
-    <p>{{ count }} travellers</p>
+    <h1>{{data.start.name}} &#8594; {{data.end.name}}</h1>
+    <p>{{ data.count }} travellers</p>
+    {% for ip in data.ips %}
+        <li> {{ ip }} 
+    {% endfor %}
   </body>
 </html>

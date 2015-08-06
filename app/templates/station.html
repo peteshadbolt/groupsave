@@ -5,12 +5,10 @@
     <link href="/static/css.css" rel="stylesheet">
   </head>
   <body>
-    <h1>{{fullname}}</h1>
-    <p>Here's a list of active journeys from this station: </p>
-
+  <h1>{{ data.name }} ({{ data.crs }})</h1>
     <ul>
-    {% for journey in journeys %}
-        <li> {{ journey.count }} journeys to {{ journey.end_full }}
+    {% for entry in data.timetable %}
+        <li> {{ entry }} 
     {% endfor %}
     </ul>
 

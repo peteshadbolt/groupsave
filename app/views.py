@@ -1,31 +1,22 @@
 from flask import render_template
 from app import app
 from app import api
+from app.api import StationItem
+from app.api import JourneyItem
 from app.matrix import redis
 
 @app.route('/')
 def index():
-    #keys = redis.smembers("allkeys")
-    #stations = [{"sid":key, "fullname":redis.get(key)} for key in keys]
-    #stations = sorted(stations, key = lambda x:x["fullname"])
     return render_template('index.html')
 
 
-@app.route('/view/<station_id>')
-def station_view(station_id):
+@app.route('/view/<crs>')
+def station_view(crs):
     # TODO: this data should come from an api call tbh
-    sid = station_id.lower()
-    fullname = redis.get(sid)
-    keys = redis.keys(sid + "/*")
-    journeys = [render_journey(key) for key in keys]
-    return render_template('station.html', journeys=journeys, fullname=fullname)
+    data = StationItem.get(crs)
+    return render_template('station.html', data=data)
 
-@app.route('/view/<a>/<b>')
-def journey_view(a, b):
-    # TODO: this data should come from an api call tbh
-    sida = a.lower()
-    sidb = b.lower()
-    fullnamea = redis.get(sida)
-    fullnameb = redis.get(sidb)
-    count = redis.scard("{:}/{:}".format(sida, sidb))
-    return render_template('journey.html', fullnamea=fullnamea, fullnameb=fullnameb, count=count)
+@app.route('/view/<crs1>/<crs2>')
+def journey_view(crs1, crs2):
+    data = JourneyItem.get(crs1, crs2)
+    return render_template('journey.html', data=data)
