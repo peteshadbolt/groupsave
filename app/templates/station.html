@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>station</title>
+    <link href="/static/css.css" rel="stylesheet">
+  </head>
+  <body>
+  <h1>{{ data.name }} ({{ data.crs }})</h1>
+    <ul>
+    {% for entry in data.timetable %}
+        <li> {{ entry }} 
+    {% endfor %}
+    </ul>
+
+  </body>
+</html>

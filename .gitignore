@@ -2,6 +2,13 @@
 *.sqlite3
 venv/
 
+*.rdb
+raw_data/
+app.db
+db_repository/
+.venv/
+*.cfg
+venv/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

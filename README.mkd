@@ -1,4 +1,2 @@
 # Groupsavr
 
-- [ ] Just get it done
-- [ ] Django 

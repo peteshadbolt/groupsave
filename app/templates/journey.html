@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>journey</title>
+    <link href="/static/css.css" rel="stylesheet">
+  </head>
+  <body>
+    <h1>{{data.start.name}} &#8594; {{data.end.name}}</h1>
+    <p>{{ data.count }} travellers</p>
+    <ul>
+    {% for ip in data.ips %}
+        <li> {{ ip }} 
+    {% endfor %}
+    </ul>
+  </body>
+</html>
