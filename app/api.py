@@ -75,3 +75,4 @@ class JourneyItem(Resource):
 api = Api(app)
 api.add_resource(StationItem, '/api/<crs>')
 api.add_resource(JourneyItem, '/api/<crs1>/<crs2>')
+

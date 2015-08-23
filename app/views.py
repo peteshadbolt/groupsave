@@ -12,10 +12,10 @@ def index():
 @app.route('/view/<crs>')
 def station_view(crs):
     # TODO: this data should come from an api call tbh
-    data = StationItem.get(crs)
+    data = StationItem().get(crs)
     return render_template('station.html', data=data)
 
 @app.route('/view/<crs1>/<crs2>')
 def journey_view(crs1, crs2):
-    data = JourneyItem.get(crs1, crs2)
+    data = JourneyItem().get(crs1, crs2)
     return render_template('journey.html', data=data)

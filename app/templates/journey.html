@@ -7,8 +7,10 @@
   <body>
     <h1>{{data.start.name}} &#8594; {{data.end.name}}</h1>
     <p>{{ data.count }} travellers</p>
+    <ul>
     {% for ip in data.ips %}
         <li> {{ ip }} 
     {% endfor %}
+    </ul>
   </body>
 </html>
