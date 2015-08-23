@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from groupsavr import *
 import unittest
 import json
