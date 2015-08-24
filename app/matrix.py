@@ -1,8 +1,7 @@
 from redis import StrictRedis
 import csv
-
-def fullname_key(crs):
-    return "fullname/{:}".format(crs)
+from app import app
+from app.keydefs import *
 
 def populate():
     """ Pre-populates Redis with a list of stations """

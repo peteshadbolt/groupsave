@@ -2,22 +2,12 @@ from flask_restful import reqparse, abort, Api, Resource
 from flask import request, make_response
 from app import app
 from app.matrix import *
+from app.keydefs import *
 import random
 import time
 
 REQUEST_MINUTES = 5
 REQUEST_LIFETIME = REQUEST_MINUTES * 60
-
-def fullname_key(crs):
-    return "fullname/{:}".format(crs)
-
-
-def journey_key(crs1, crs2, minute):
-    return "journey/{:}/{:}/{:}".format(crs1, crs2, minute)
-
-
-def platform_key(crs, minute):
-    return "platform/{:}/{:}".format(crs, minute)
 
 class StationItem(Resource):
     """ A single station """
