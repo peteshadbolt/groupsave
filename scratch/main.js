@@ -14,8 +14,7 @@ var fuseOptions = {
 document.addEventListener("DOMContentLoaded", setup);
 
 function updateFrom(args) {
-    console.log(args);
-    var search = $(this).val().trim();
+    var search = this.value.trim();
     if (search.length<3) {
         document.getElementById("showfrom").innerHTML="";
         return;
@@ -30,9 +29,9 @@ function updateFrom(args) {
 }
 
 function updateTo(args) {
-    var search = $(this).val().trim();
+    var search = this.value.trim();
     if (search.length<3) {
-        document.getElementById("showto").text("");
+        document.getElementById("showto").innerHTML = "";
         return;
     }
     var result = fuse.search(search);
@@ -41,14 +40,14 @@ function updateTo(args) {
         names.push(result[i].name);
     }
     var s = names.join(" / ");
-    document.getElementById("showto").text(s);
+    document.getElementById("showto").innerHTML = s;
 }
 
 function updateWhen(args) {
-    var search = $(this).val().trim();
+    var search = this.value.trim();
     var result = Date.parse(search);
     var s = result;
-    document.getElementById("showwhen").text(s);
+    document.getElementById("showwhen").innerHTML = s;
 }
 
 function setup(argument) {
@@ -56,8 +55,8 @@ function setup(argument) {
     fuse = new Fuse(stations, fuseOptions); 
 
     // Bind events
-    document.getElementById('from').addEventListener("change", updateFrom);
-    document.getElementById('to').addEventListener("change", updateTo);
-    document.getElementById('when').addEventListener("change", updateWhen);
+    document.getElementById('from').addEventListener("input", updateFrom);
+    document.getElementById('to').addEventListener("input", updateTo);
+    document.getElementById('when').addEventListener("input", updateWhen);
 }
 
