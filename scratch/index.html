@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>groupsavr</title>
+  <link rel="stylesheet" href="css.css">
+  <script src="jquery.js"></script>
+  <script src="date.js"></script>
+  <script src="stations.js"></script>
+  <script src="fuse.js"></script>
+  <script src="main.js"></script>
+
+</head>
+
+<body>
+
+<h1>groupsavr</h1>
+<p>
+Get a 1/3 <a href="http://www.nationalrail.co.uk/times_fares/pr354fdc0a0400020101fea1769fbf60.aspx">GroupSave</a> discount on your train ticket.
+</p>
+
+<p>
+<div class='input'> 
+    <input type='text' id='from' placeholder='Where from?'/> 
+</div>
+<div id="showfrom"></div>
+</p>
+
+<p>
+<div class='input'> 
+    <input type='text' id='to' placeholder='Where to?'/> 
+</div>
+<div id="showto"></div>
+</p>
+
+<p>
+<div class='input'> 
+    <input type='text' id='when' placeholder='When?'/> 
+</div>
+<div id="showwhen"></div>
+</p>
+
+
+<p>
+<button onclick=javascript:start()>Find a group</button>
+</p>
+
+<!--<p id=output style="display:none">-->
+<!--<img id=spinner src="./ajax-loader.gif"/>-->
+<!--<span id=output-text>-->
+<!--We're looking for people who are making the same journey ...-->
+<!--</span>-->
+<!--</p>-->
+
+<!--<p>-->
+<!--<img id=costa src="costa.jpg" style="display:none"/>-->
+<!--</p>-->
+
+</body>
+</html>
