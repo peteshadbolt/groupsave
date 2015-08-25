@@ -1,30 +1,33 @@
-var fuse;
-
-var fuseOptions = {
-  caseSensitive: false,
-  includeScore: false,
-  shouldSort: true,
-  threshold: 0.1,
-  location: 0,
-  distance: 100,
-  maxPatternLength: 32,
-  keys: ["name"]
-};
-
 document.addEventListener("DOMContentLoaded", setup);
 
+// TODO: just sort that station list in terms of frequency of use haha
+function matchStation(s) {
+    var output = [];    
+    if (s.length==0) return output;
+    for ( var i = 0; i < stations.length; i++) {
+        var station = stations[i];
+        if (station.name.toLowerCase().indexOf(s) != -1 || station.crs == s) {
+           output.push(station.name);
+        }
+        if (output.length>5){return output;}
+    }
+    return output;
+}
+
 function updateFrom(args) {
-    var search = this.value.trim();
-    if (search.length<3) {
-        document.getElementById("showfrom").innerHTML="";
-        return;
-    }
-    var result = fuse.search(search);
-    var names = [];
-    for (var i=0; i < result.length; ++i) {
-        names.push(result[i].name);
-    }
-    var s = names.join(" / ");
+    var search = this.value.trim().toLowerCase();
+    var s = matchStation(search).join(" / ");
+
+    //if (search.length<3) {
+        //document.getElementById("showfrom").innerHTML="";
+        //return;
+    //}
+    //var result = fuse.search(search);
+    //var names = [];
+    //for (var i=0; i < result.length; ++i) {
+        //names.push(result[i].name);
+    //}
+    //var s = names.join(" / ");
     document.getElementById("showfrom").innerHTML = s;
 }
 
@@ -52,11 +55,11 @@ function updateWhen(args) {
 
 function setup(argument) {
     // Initiate fuse
-    fuse = new Fuse(stations, fuseOptions); 
+    //fuse = new Fuse(stations, fuseOptions); 
 
     // Bind events
     document.getElementById('from').addEventListener("input", updateFrom);
-    document.getElementById('to').addEventListener("input", updateTo);
-    document.getElementById('when').addEventListener("input", updateWhen);
+    //document.getElementById('to').addEventListener("input", updateTo);
+    //document.getElementById('when').addEventListener("input", updateWhen);
 }
 
