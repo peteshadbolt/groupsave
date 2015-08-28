@@ -2,6 +2,7 @@ var from, to, showfrom, showto;
 
 function matchStation(s) {
     var output = [];    
+    s = s.trim().toLowerCase();
     if (s.length===0) return output;
     for ( var i = 0; i < stations.length; i++) {
         var station = stations[i];
@@ -23,9 +24,8 @@ function autocomplete(field, output) {
         return a;
     };
 
-    var autocompleteListener = function(args) {
-        var search = field.value.trim().toLowerCase();
-        var matches = matchStation(search);
+    var autocompleteListener = function() {
+        var matches = matchStation(field.value);
         var links = matches.map(stationAsLink);
         output.innerHTML = "";
         if (links[0]) links[0].className="hi";
@@ -37,6 +37,7 @@ function autocomplete(field, output) {
     };
 
     field.addEventListener("input", autocompleteListener);
+    autocompleteListener();
 }
 
 function setup(argument) {
@@ -46,6 +47,11 @@ function setup(argument) {
     showto = document.getElementById("showto");
     autocomplete(from, showfrom);
     autocomplete(to, showto);
+}
+
+function go(){
+    var fromCRS = matchStation(from.value)[0][0];
+    var toCRS = matchStation(to.value)[0][0];
 }
 
 document.addEventListener("DOMContentLoaded", setup);
