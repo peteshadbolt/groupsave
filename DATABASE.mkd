@@ -1,4 +1,4 @@
-# Database schema
+# Finking about the DB
 
 Here's how we're going to design the database:
 
