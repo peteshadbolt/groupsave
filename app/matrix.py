@@ -5,7 +5,7 @@ from app.keydefs import *
 
 def populate():
     """ Pre-populates Redis with a list of stations """
-    with open("data/rail_references.csv") as f:
+    with open("data/railreferences.csv") as f:
         for row in csv.reader(f):
             crs = row[2].lower()
             key = fullname_key(crs)

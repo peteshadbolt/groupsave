@@ -5,27 +5,19 @@ from app.matrix import *
 from app.keydefs import *
 import random
 import time
+import datetime
+from datetime import datetime as dt
 
 REQUEST_MINUTES = 5
 REQUEST_LIFETIME = REQUEST_MINUTES * 60
 
-class StationItem(Resource):
-    """ A single station """
-    def get(self, crs):
-        fullname = redis.get(fullname_key(crs))
-
-        start_time = time.time()
-        minute = int(start_time // 60)
-        minutes = xrange(minute - REQUEST_MINUTES, minute + REQUEST_MINUTES * 2)
-
-        timetable = {m: redis.lrange(platform_key(crs, m), 0, -1) for m in minutes}
-        timetable = {time.strftime("%A %H:%M", time.gmtime(k)): v for k, v in timetable.items() if len(v)>0}
-
-        return {"crs": crs, "name": fullname, "timetable": timetable}
+def get_future_time(s):
+    """ Get a time in the future from a little string """
+    pass
 
 class JourneyItem(Resource):
     """ A journey from A to B """
-    def get(self, crs1, crs2):
+    def get(self, crs1, crs2, when):
         start_time = time.time()
         minute = int(start_time // 60)
         minutes = xrange(minute - REQUEST_MINUTES, minute + REQUEST_MINUTES * 2)
@@ -37,7 +29,8 @@ class JourneyItem(Resource):
         ips = map(int, ips)
         start = {"crs":crs1, "name":fullname1}
         end = {"crs":crs2, "name":fullname2}
-        return {"start": start, "end": end, "count": count, "ips": ips}
+        when = when
+        return {"start": start, "end": end, "count": count, "ips": ips, "when": when}
 
     def put(self, crs1, crs2):
         ip = str(random.randint(0, 1e2))  #user = str(request.remote_addr)
@@ -63,6 +56,5 @@ class JourneyItem(Resource):
 
 # Setup API resource routing 
 api = Api(app)
-api.add_resource(StationItem, '/api/<crs>')
 api.add_resource(JourneyItem, '/api/<crs1>/<crs2>')
 

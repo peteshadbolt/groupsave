@@ -52,6 +52,10 @@ function setup(argument) {
 function go(){
     var fromCRS = matchStation(from.value)[0][0];
     var toCRS = matchStation(to.value)[0][0];
+    var when = document.getElementById("when").value;
+    console.log(fromCRS, toCRS, when);
+    window.location.href = "/view/"+fromCRS+"/"+toCRS+"/"+when;
 }
 
 document.addEventListener("DOMContentLoaded", setup);
+
