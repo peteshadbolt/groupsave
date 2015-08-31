@@ -7,17 +7,13 @@ import random
 import arrow
 import re
 
-REQUEST_MINUTES = 5
-REQUEST_LIFETIME = REQUEST_MINUTES * 60
-
-
-def get_future_time(s):
+def parse_time(s, now=None):
     """ Get a time in the future from a little string """
-    now = arrow.now("Europe/London")
-    matched = re.match(r"(?:(\d\d?)h)?(?:(\d\d?)m)?", s)
+    if not now: now = arrow.now("Europe/London")
+    matched = re.match(r"(?:(\d{1,3})h)?(?:(\d{1,3})m)?", s)
     hours, minutes = [int(x) if x else 0 for x in matched.groups()]
-    now = now.replace(hours=+hours, minutes=+minutes)
-    return now.humanize()
+    future = now.replace(hours=+hours, minutes=+minutes)
+    return future
 
 
 class JourneyItem(Resource):
@@ -25,35 +21,28 @@ class JourneyItem(Resource):
     """ A journey from A to B """
 
     def get(self, crs1, crs2, when):
-        # start_time = time.time()
-        # minute = int(start_time // 60)
-        # minutes = xrange(minute - REQUEST_MINUTES, minute + REQUEST_MINUTES * 2)
-        # keys = [journey_key(crs1, crs2, m) for m in minutes]
-        # ips = redis.sunion(keys)
-        # count = len(ips)
-        # ips = map(int, ips)
-
-        count = 0
-        ips = []
+        start_time = parse_time(when)
         fullname1 = redis.get(fullname_key(crs1))
         fullname2 = redis.get(fullname_key(crs2))
         start = {"crs": crs1, "name": fullname1}
         end = {"crs": crs2, "name": fullname2}
-        when = when
-        return {"start": start, "end": end, "count": count, "ips": ips, "when": when}
 
-    def put(self, crs1, crs2):
-        ip = str(random.randint(0, 1e2))  # user = str(request.remote_addr)
+        p = redis.pipeline()
+        p.execute()
+
+        return {"start": start, "end": end, "count": 0, "ips": [], "when": when}
+
+    def put(self, crs1, crs2, when):
+        # User ID
+        user = str(request.remote_addr)
 
         # Timing
-        start_time = time.time()
-        minute = int(start_time // 60)
-        expires = minute * 60 + REQUEST_LIFETIME
-        expires = int(expires)
+        start_time = parse_time(when)
+        expires = start_time.replace(minutes = app.config["LIFETIME_MINUTES"])
 
         # Journey and platform keys
-        jkey = journey_key(crs1, crs2, minute)
-        pkey = platform_key(crs1, minute)
+        jkey = journey_key(crs1, crs2, start_time)
+        pkey = platform_key(crs1, start_time)
 
         # Dump all that into redis
         p = redis.pipeline()

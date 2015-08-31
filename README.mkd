@@ -2,7 +2,16 @@
 
 Save some dosh and/or learn about Flask and Redis before everyone switches over to Elixir.
 
+# Finking about times
+
+* 1h from now
+* 10m from now
+* 1h10m from now
+* +- 1h in 3h30m from now
+
 # Finking about the DB
+
+/leeds/bri/1300: {128.1, 128.2} # Expires at 1330
 
 Here's how we're going to design the database:
 

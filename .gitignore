@@ -1,3 +1,4 @@
+app/settings.py
 *.jpg
 *.sqlite3
 venv/
