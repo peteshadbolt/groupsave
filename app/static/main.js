@@ -20,7 +20,10 @@ function autocomplete(field, output) {
         var linkText = document.createTextNode(station[1]);
         a.appendChild(linkText);
         a.href = "#";
-        a.onclick = function () { field.value = station[1]; };
+        a.onclick = function () { 
+            field.value = station[1]; 
+            output.innerHTML="";
+        };
         return a;
     };
 
@@ -32,7 +35,7 @@ function autocomplete(field, output) {
         for (var i=0; i < links.length; ++i) {
             output.appendChild(links[i]);
             output.appendChild(document.createTextNode(" "));
-        }
+        };
         if (links.length>5) {output.appendChild(document.createTextNode("..."));}
     };
 
