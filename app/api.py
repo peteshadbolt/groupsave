@@ -1,11 +1,9 @@
+import arrow, re
 from flask_restful import reqparse, abort, Api, Resource
 from flask import request, make_response, jsonify
 from app import app
-from app.matrix import *
+from app.matrix import redis
 from app.keydefs import *
-import random
-import arrow
-import re
 
 def parse_time(s, now=None):
     """ Get a time in the future from a little string """
@@ -21,24 +19,31 @@ class JourneyItem(Resource):
     """ A journey from A to B """
 
     def get(self, crs1, crs2, when):
-        start_time = parse_time(when)
-        fullname1 = redis.get(fullname_key(crs1))
-        fullname2 = redis.get(fullname_key(crs2))
-        start = {"crs": crs1, "name": fullname1}
-        end = {"crs": crs2, "name": fullname2}
+        # Figure out which keys we need to check
+        when = parse_time(when)
+        start = when.replace(minutes=-30)
+        end = when.replace(minutes = 30)
+        bins = arrow.Arrow.range("minute", start, end)
+        keys = [journey_key(crs1, crs2, b) for b in bins]
 
+        # Hit redis
         p = redis.pipeline()
+        name1, name2 = redis.mget(map(fullname_key, (crs1, crs2)))
+        ips = list(redis.sunion(keys))
         p.execute()
 
-        return {"start": start, "end": end, "count": 0, "ips": [], "when": when}
+        # Output
+        return {"start": {"crs": crs1, "name":name1}, 
+                "end": {"crs": crs2, "name":name2}, 
+                "count": len(ips), "ips": ips, "when": when.humanize()}
 
     def put(self, crs1, crs2, when):
         # User ID
-        user = str(request.remote_addr)
+        ip = str(request.remote_addr)
 
         # Timing
         start_time = parse_time(when)
-        expires = start_time.replace(minutes = app.config["LIFETIME_MINUTES"])
+        expires = start_time.replace(minutes = app.config["LIFETIME_MINUTES"]).timestamp
 
         # Journey and platform keys
         jkey = journey_key(crs1, crs2, start_time)
