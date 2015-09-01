@@ -2,11 +2,11 @@
 
 Save some dosh and/or learn about Flask and Redis before everyone switches over to Elixir.
 
-# Finking about the DB
+## Finking about the DB
 
 Now we used ordered sets and they :zap: *fuckin rule* :zap:
 
-# Finking about times
+## Finking about times
 
 * 1h from now
 * 10m from now

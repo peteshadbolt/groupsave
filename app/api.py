@@ -3,9 +3,8 @@ import re
 from flask_restful import reqparse, abort, Api, Resource
 from flask import request, make_response, jsonify
 from app import app
-from app.matrix import redis
+from app import redis
 from app.fullnames import fullnames
-
 
 def parse_time(s, now=None):
     """ Get a time in the future from a little string """
