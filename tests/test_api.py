@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from app import app
 from app import api
-from app.matrix import redis
+from app import redis
 import unittest
 import json
 import flask
