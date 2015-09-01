@@ -1,13 +1,15 @@
-import arrow, re
+import arrow
+import re
 from flask_restful import reqparse, abort, Api, Resource
 from flask import request, make_response, jsonify
 from app import app
 from app.matrix import redis
-from app.keydefs import *
+from app.fullnames import fullnames
+
 
 def parse_time(s, now=None):
     """ Get a time in the future from a little string """
-    if not now: now = arrow.now("Europe/London")
+    now = now if now else arrow.now(app.config["TIMEZONE"])
     matched = re.match(r"(?:(\d{1,3})h)?(?:(\d{1,3})m)?", s)
     hours, minutes = [int(x) if x else 0 for x in matched.groups()]
     future = now.replace(hours=+hours, minutes=+minutes)
@@ -19,44 +21,38 @@ class JourneyItem(Resource):
     """ A journey from A to B """
 
     def get(self, crs1, crs2, when):
-        # Figure out which keys we need to check
+        """ Get IPs and count close to a given time """
+        key = "{}:{}".format(crs1, crs2)
         when = parse_time(when)
-        start = when.replace(minutes=-30)
-        end = when.replace(minutes = 30)
-        bins = arrow.Arrow.range("minute", start, end)
-        keys = [journey_key(crs1, crs2, b) for b in bins]
+        t1 = when.replace(minutes=-30).timestamp
+        t2 = when.replace(minutes=30).timestamp
 
         # Hit redis
-        p = redis.pipeline()
-        name1, name2 = redis.mget(map(fullname_key, (crs1, crs2)))
-        ips = list(redis.sunion(keys))
-        p.execute()
+        count = redis.zcount(key, t1, t2)
+        ips = redis.zrangebyscore(key, t1, t2, withscores=True)
+        name1 = fullnames[crs1]
+        name2 = fullnames[crs2]
 
         # Output
-        return {"start": {"crs": crs1, "name":name1}, 
-                "end": {"crs": crs2, "name":name2}, 
+        return {"start": {"crs": crs1, "name": name1},
+                "end": {"crs": crs2, "name": name2},
                 "count": len(ips), "ips": ips, "when": when.humanize()}
 
     def put(self, crs1, crs2, when):
-        # User ID
+        """ Register an IP at a given time """
+        key = "{}:{}".format(crs1, crs2)
         ip = str(request.remote_addr)
+        start_time = parse_time(when).timestamp
 
-        # Timing
-        start_time = parse_time(when)
-        expires = start_time.replace(minutes = app.config["LIFETIME_MINUTES"]).timestamp
+        # Kill IPs that are too old
+        too_old = arrow.now(app.config["TIMEZONE"]).replace(
+            hours=-app.config["MAX_AGE_HOURS"]).timestamp
+        redis.zremrangebyscore("key", 0, too_old)
 
-        # Journey and platform keys
-        jkey = journey_key(crs1, crs2, start_time)
-        pkey = platform_key(crs1, start_time)
+        # Add the new ip
+        redis.zadd(key, start_time, ip)
+        return "Created journey in {:}".format(key), 201
 
-        # Dump all that into redis
-        p = redis.pipeline()
-        p.sadd(jkey, ip)
-        p.lpush(pkey, crs2)
-        p.expireat(jkey, expires)
-        p.expireat(pkey, expires)
-        p.execute()
-        return "Created journey in {:}".format(jkey), 201
 
 # Setup API resource routing
 api = Api(app)
