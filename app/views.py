@@ -1,7 +1,5 @@
 from flask import render_template
-from app import app
-from app import api
-from app import redis
+from app import app, api, redis
 
 @app.route('/')
 def index():
