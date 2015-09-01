@@ -6,7 +6,6 @@ import unittest
 import json
 import flask
 import time, arrow
-from app.keydefs import *
 
 class APITestCase(unittest.TestCase):
 
@@ -27,19 +26,20 @@ class APITestCase(unittest.TestCase):
         assert data["end"]["name"] == "Sheffield"
         assert data["when"] == u"just now"
 
-    def test_put_stations(self):
+    def test_put_stations(self, N=100):
         """ See that we can put stations into the DB """
-        for i in range(1000):
+        # Add a load of users with fake IPs
+        for i in range(N):
             base = {"REMOTE_ADDR": "user{}".format(i)}
             self.app.put("/api/lds/shf/{}m".format(i), environ_base=base)
 
-        t = time.clock()
-        for i in range(100):
-            data = json.loads(self.app.get("/api/lds/shf/now", environ_base=base).data)
-        print "{} milliseconds per request".format(1000*(time.clock() -t)/100.)
+        # Get an interval and check that we see the right number of people
+        data = json.loads(self.app.get("/api/lds/shf/now", environ_base=base).data)
+        assert data["count"]==app.config["LIFETIME_MINUTES"]+1
+        assert data["when"] == "just now"
+        assert data["start"] == {"crs":"lds", "name":"Leeds"}
+        assert data["end"] == {"crs":"shf", "name":"Sheffield"}
 
-        print data["count"]
-        assert data["count"] == 1000
 
 if __name__ == '__main__':
     import nose
