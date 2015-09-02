@@ -2,7 +2,7 @@ import arrow
 import re
 from flask_restful import reqparse, abort, Api, Resource
 from flask import request, make_response, jsonify
-from app import app, redis, fullnames
+from gs import app, redis, fullnames
 
 def parse_time(s, now=None):
     """ Get a time in the future from a little string """

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from app import api
+import api
 import unittest
 import arrow
 

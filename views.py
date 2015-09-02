@@ -1,9 +1,12 @@
 from flask import render_template
-from app import app, api, redis
+from gs import app
+import api, redis
+import time
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    output = render_template('index.html')
+    return output
 
 @app.route('/view/<crs1>/<crs2>/<when>')
 def journey_view(crs1, crs2, when):

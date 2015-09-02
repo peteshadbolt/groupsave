@@ -1,7 +1,6 @@
 #!/usr/bin/python
-from app import app
-from app import api
-from app import redis
+from gs import app, redis
+import api
 import unittest
 import json
 import flask
@@ -17,7 +16,7 @@ class APITestCase(unittest.TestCase):
 
     def test_list_stations(self):
         """ See that we get the expected data when listing stations """
-        base = {"REMOTE_ADDR": "peepee"}
+        base = {"REMOTE_ADDR": "test"}
         response = self.app.get('/api/lds/shf/now', environ_base=base)
         data = json.loads(response.data)
         assert data["start"]["crs"] == "lds"

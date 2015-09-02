@@ -1,3 +1,3 @@
 #!/usr/bin/python
-from app import app
+from gs import app
 app.run(debug=True)
