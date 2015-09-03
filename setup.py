@@ -1,10 +1,10 @@
 from setuptools import setup
 
-setup(name='FlaskApp',
+setup(name='gs',
       version='1.0',
-      description='A basic Flask app with static files',
-      author='Ryan Jarvinen',
-      author_email='ryanj@redhat.com',
-      url='http://www.python.org/sigs/distutils-sig/',
+      description='Group saving',
+      author='Pete Shadbolt',
+      author_email='hello@peteshadbolt.co.uk',
+      url='peteshadbolt.co.uk',
      install_requires=['Flask>=0.10.1'],
      )

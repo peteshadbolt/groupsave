@@ -1,0 +1,31 @@
+body {
+    font-family: Helvetica, "Nimbus Sans L", "Liberation Sans", Arial, sans-serif;
+    padding-left: 1em;
+}
+
+button, select {
+    font-size: 13pt;
+    width: 10em;
+    padding: .2em;
+    margin: 0pt;
+}
+
+input { 
+    font-size:13pt; 
+    padding: 0.2em; 
+    margin: 0pt;
+    width: 10em;
+}
+
+#showfrom, #showto {
+    padding-top: .5em;
+    font-size: 12pt;
+}
+
+#showfrom a, #showto a {
+    color: darkblue;
+}
+
+.hi {
+    background-color: #ffdd88;
+}
