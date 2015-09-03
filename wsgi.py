@@ -8,7 +8,7 @@ import os
 #except IOError:
     #pass
 
-from flaskapp import app as application
+from gs import app as application
 
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
