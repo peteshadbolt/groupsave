@@ -9,7 +9,10 @@ import re
 # Boot the app
 app = Flask(__name__)
 app.config.from_pyfile('settings.cfg')
-redis = StrictRedis()
+redis = StrictRedis(app.config["REDIS_HOST"], 
+        app.config["REDIS_PORT"], 
+        db=0, 
+        password=app.config["REDIS_PASSWORD"])
 
 def parse_time(s, now=None):
     """ Get a time in the future from a little string """
