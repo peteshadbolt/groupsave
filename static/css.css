@@ -1,33 +1,19 @@
 body {
     font-family: Helvetica, "Nimbus Sans L", "Liberation Sans", Arial, sans-serif;
     padding-left: 1em;
-    white-space:nowrap;
+    font-size: 1.5em;
 }
 
 button, select {
-    font-size: 13pt;
     width: 10em;
     padding: .2em;
-    margin: .2em 0em;
+    margin: .4em 0em;
+    font-size: 1em;
 }
 
 input { 
-    font-size:13pt; 
     padding: .2em; 
-    margin: .2em 0em;
+    margin: .4em 0em;
     width: 10em;
-}
-
-#showfrom, #showto {
-    padding-top: .5em;
-    font-size: 11pt;
-    display:inline-block;
-}
-
-#showfrom a, #showto a {
-    color: darkblue;
-}
-
-.hi {
-    background-color: #ffdd88;
+    font-size: 1em;
 }

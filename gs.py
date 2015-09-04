@@ -11,7 +11,7 @@ arrow.locales.EnglishLocale.timeframes["now"] = "now"
 
 # Boot the app
 app = Flask(__name__)
-app.config.from_pyfile('settings.cfg')
+app.config.from_pyfile("settings.cfg")
 redis = StrictRedis(app.config["REDIS_HOST"], 
         app.config["REDIS_PORT"], 
         db=0, 
@@ -63,39 +63,38 @@ class Journey(Resource):
         redis.zadd(key, start_time, ip)
         return "Created journey in {:}".format(key), 201
 
-
-class Populate(Resource):
-
-    """ Populate with fake data """
-
-    def get(self):
-        """ Get IPs and count close to a given time """
-        s = ""
-        keys = fullnames.keys()
-        for i in range(1000):
-            a = random.choice(keys)
-            b = random.choice(keys)
-            ip = random.choice(range(1000))
-            Journey().put(a, b, "now", fake_ip = ip)
-            s += "{} {} {}\n".format(a, b, ip)
-        return s
-
-
-
 # Setup API routing
 api = Api(app)
-api.add_resource(Journey, '/api/<crs1>/<crs2>/<when>')
-api.add_resource(Populate, '/api/populate')
+api.add_resource(Journey, "/api/<crs1>/<crs2>/<when>")
 
-@app.route('/')
+@app.route("/")
 def index():
-    output = render_template('index.html')
+    output = render_template("index.html", stations = fullnames.values())
     return output
 
-@app.route('/view/<crs1>/<crs2>/<when>')
+@app.route("/create", methods = ["GET", "POST"])
+def create():
+    fd = request.form
+    #Journey().put(crs1, crs2, when, fake_ip="mickey mouse")
+    #data = Journey().get(crs1, crs2, when)
+    return render_template("echo.html", **fd)
+
+@app.route("/view/<crs1>/<crs2>/<when>")
 def journey_view(crs1, crs2, when):
+    Journey().put(crs1, crs2, when, fake_ip="mickey mouse")
     data = Journey().get(crs1, crs2, when)
-    return render_template('journey.html', **data)
+    return render_template("journey.html", **data)
+
+@app.route("/populate")
+def populate():
+    keys = fullnames.keys()
+    entries = []
+    for i in range(1000):
+        a, b = "lds",  random.choice(keys)
+        ip = random.randint(0, 100)
+        Journey().put(a, b, "now", fake_ip = ip)
+        entries.append("{} / {} : {}".format(a, b, ip))
+    return render_template("populate.html", entries = entries)
 
 if __name__=="__main__":
-    app.run()
+    app.run(host= "0.0.0.0")

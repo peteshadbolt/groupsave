@@ -6,32 +6,45 @@
   <meta content="width=device-width, initial-scale=1" name="viewport">
   <title>gs</title>
   <link rel="stylesheet" href="static/css.css">
-  <script src="static/stations.js"></script>
-  <script src="static/main.js"></script>
 </head>
 
 <body>
 
-<h1>gs</h1>
+<!--The datalist of allowed stations-->
+<datalist id=stations>
+{% for station in stations %}
+<option> {{ station }} </option>
+{% endfor %}
+</datalist>
+
+<!--The actual page-->
 <p>
 Get a 1/3 <a href="http://www.nationalrail.co.uk/times_fares/pr354fdc0a0400020101fea1769fbf60.aspx">GroupSave</a> discount on your train ticket.
 </p>
 
-<form>
-<input type='text' id='from' placeholder='Where from?' tabindex=1 autofocus/> 
-<div id="showfrom"></div><br/>
-<input type='text' id='to' placeholder='Where to?' tabindex=2/> 
-<span id="showto"></span><br/>
-<select id="when" tabindex=3>
-    <option value="now" disabled selected>When?</option>
-    <option value="now">now</option>
-    <option value="30m">in half an hour</option>
-    <option value="1h">in an hour</option>
-    <option value="2h">in two hours</option>
-    <option value="4h">in four hours</option>
-</select>
-<br>
-<input type=submit onclick=javascript:go() tabindex=4 value="Find a group">
+<form action="create" method="POST">
+    <div>
+    <input name="from" type="text" tabindex=1 autofocus value="" list="stations" placeholder="Where from?"/> 
+    </div>
+
+    <div>
+    <input name="to" type="text" tabindex=2 value="" list="stations" placeholder="Where to?"/> 
+    </div>
+
+    <div>
+    <select name="when" tabindex=3>
+        <option value="now" disabled selected>When?</option>
+        <option value="now">Now</option>
+        <option value="30m">In half an hour</option>
+        <option value="1h">In an hour</option>
+        <option value="2h">In two hours</option>
+        <option value="4h">In four hours</option>
+    </select> 
+    </div>
+
+    <div>
+    <input type=submit tabindex=4 value="Find a group">
+    </div>
 </form>
 
 </body>

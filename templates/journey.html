@@ -2,20 +2,19 @@
 <html>
   <head>
     <title>journey</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href="/static/css.css" rel="stylesheet">
   </head>
 
   <body>
-    <p>
-        Who wants to travel from <b>{{start.name}}</b> to <b>{{end.name}}</b>, <b>{{when}}</b>?
-    </p>
+
+    <p>Who wants to travel from <b>{{start.name}}</b> to <b>{{end.name}}</b>, <b>{{when}}</b>?</p>
 
     <p>
     You and 
     <b>
     {{ count }} other 
-    {% if count==1 %} person {% else %} people {% endif %}
-    </b>.
+    {% if count==1 %} person {% else %} people{% endif %}</b>.
     </p>
 
     <ul>
@@ -24,9 +23,7 @@
     {% endfor %}
     </ul>
 
-    <p>
-    This page will update if other people indicate interest.
-    </p>
+    <p>This page will update if other people indicate interest.</p>
 
   </body>
 </html>

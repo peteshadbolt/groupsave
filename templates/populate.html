@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>populated</title>
+    <link href="/static/css.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <p>
+        Okay I populated the database with these entries
+    </p>
+
+    <ul>
+    {% for entry in entries %}
+        <li> {{ entry }} 
+    {% endfor %}
+    </ul>
+
+  </body>
+</html>
