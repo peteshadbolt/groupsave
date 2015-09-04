@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 from gs import app as application
 
 if __name__ == '__main__':
