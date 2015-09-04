@@ -8,9 +8,11 @@ import time, arrow
 class APITestCase(unittest.TestCase):
 
     def setUp(self):
+        """ Pre testing """
         self.app = app.test_client()
 
     def tearDown(self):
+        """ Post testing """
         redis.flushdb()
 
     def test_list_stations(self):

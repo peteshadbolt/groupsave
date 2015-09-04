@@ -6,12 +6,27 @@
   </head>
 
   <body>
-    <h1>{{data.start.name}} &#8594; {{data.end.name}} @ {{data.when}}</h1>
-    <p>{{ data.count }} travellers</p>
+    <p>
+        Who wants to travel from <b>{{start.name}}</b> to <b>{{end.name}}</b>, <b>{{when}}</b>?
+    </p>
+
+    <p>
+    You and 
+    <b>
+    {{ count }} other 
+    {% if count==1 %} person {% else %} people {% endif %}
+    </b>.
+    </p>
+
     <ul>
-    {% for ip in data.ips %}
+    {% for ip in ips %}
         <li> {{ ip }} 
     {% endfor %}
     </ul>
+
+    <p>
+    This page will update if other people indicate interest.
+    </p>
+
   </body>
 </html>

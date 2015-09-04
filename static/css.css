@@ -1,25 +1,27 @@
 body {
     font-family: Helvetica, "Nimbus Sans L", "Liberation Sans", Arial, sans-serif;
     padding-left: 1em;
+    white-space:nowrap;
 }
 
 button, select {
     font-size: 13pt;
     width: 10em;
     padding: .2em;
-    margin: 0pt;
+    margin: .2em 0em;
 }
 
 input { 
     font-size:13pt; 
-    padding: 0.2em; 
-    margin: 0pt;
+    padding: .2em; 
+    margin: .2em 0em;
     width: 10em;
 }
 
 #showfrom, #showto {
     padding-top: .5em;
-    font-size: 12pt;
+    font-size: 11pt;
+    display:inline-block;
 }
 
 #showfrom a, #showto a {

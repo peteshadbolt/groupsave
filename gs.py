@@ -5,6 +5,9 @@ from redis import StrictRedis
 from fullnames import fullnames
 import arrow
 import re
+import random
+
+arrow.locales.EnglishLocale.timeframes["now"] = "now"
 
 # Boot the app
 app = Flask(__name__)
@@ -23,7 +26,7 @@ def parse_time(s, now=None):
     return future
 
 
-class JourneyItem(Resource):
+class Journey(Resource):
 
     """ A journey from A to B """
 
@@ -36,19 +39,19 @@ class JourneyItem(Resource):
 
         # Hit redis
         count = redis.zcount(key, t1, t2)
-        ips = redis.zrangebyscore(key, t1, t2, withscores=True)
+        ips = redis.zrangebyscore(key, t1, t2, withscores=False)
         name1 = fullnames[crs1]
         name2 = fullnames[crs2]
 
         # Output
         return {"start": {"crs": crs1, "name": name1},
                 "end": {"crs": crs2, "name": name2},
-                "count": len(ips), "ips": ips, "when": when.humanize()}
+                "count": count, "ips": ips, "when": when.humanize()}
 
-    def put(self, crs1, crs2, when):
+    def put(self, crs1, crs2, when, fake_ip=None):
         """ Register an IP at a given time """
         key = "{}:{}".format(crs1, crs2)
-        ip = str(request.remote_addr)
+        ip = fake_ip if fake_ip else str(request.remote_addr)
         start_time = parse_time(when).timestamp
 
         # Kill IPs that are too old
@@ -61,9 +64,28 @@ class JourneyItem(Resource):
         return "Created journey in {:}".format(key), 201
 
 
+class Populate(Resource):
+
+    """ Populate with fake data """
+
+    def get(self):
+        """ Get IPs and count close to a given time """
+        s = ""
+        keys = fullnames.keys()
+        for i in range(1000):
+            a = random.choice(keys)
+            b = random.choice(keys)
+            ip = random.choice(range(1000))
+            Journey().put(a, b, "now", fake_ip = ip)
+            s += "{} {} {}\n".format(a, b, ip)
+        return s
+
+
+
 # Setup API routing
 api = Api(app)
-api.add_resource(JourneyItem, '/api/<crs1>/<crs2>/<when>')
+api.add_resource(Journey, '/api/<crs1>/<crs2>/<when>')
+api.add_resource(Populate, '/api/populate')
 
 @app.route('/')
 def index():
@@ -72,8 +94,8 @@ def index():
 
 @app.route('/view/<crs1>/<crs2>/<when>')
 def journey_view(crs1, crs2, when):
-    data = JourneyItem().get(crs1, crs2, when)
-    return render_template('journey.html', data=data)
+    data = Journey().get(crs1, crs2, when)
+    return render_template('journey.html', **data)
 
 if __name__=="__main__":
     app.run()
