@@ -58,7 +58,7 @@ def api_put(crs1, crs2, when, fake_ip=None):
 
 @app.route("/")
 def index():
-    if not redis.exists("cache:index") or True:
+    if not redis.exists("cache:index"):
         page = render_template("index.html", stations = stations.values())
         redis.set("cache:index", page)
         return page
@@ -79,7 +79,7 @@ def api(crs1, crs2, when):
     crs1 = fuzzy_match(crs1)[0]
     crs2 = fuzzy_match(crs2)[0]
     data = api_get(crs1, crs2, when)
-    return render_template("journey.html", **data)
+    return redirect(newurl, code=302)
 
 @app.route("/api/<crs1>/<crs2>/<when>", methods = ["GET", "PUT"])
 def api_json(crs1, crs2, when):
