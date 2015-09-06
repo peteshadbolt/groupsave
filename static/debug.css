@@ -1,0 +1,23 @@
+body {
+    font-family: monospace;
+    padding-left: 1em;
+    font-size: 10pt;
+}
+
+button, select {
+    width: 10em;
+    padding: .2em;
+    margin: .4em 0em;
+    font-size: 1em;
+}
+
+td {
+    width:10em;
+}
+
+input { 
+    padding: .2em; 
+    margin: .4em 0em;
+    width: 10em;
+    font-size: 1em;
+}

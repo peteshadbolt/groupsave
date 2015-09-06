@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>populated</title>
-    <link href="/static/css.css" rel="stylesheet">
+    <link href="/static/debug.css" rel="stylesheet">
   </head>
 
   <body>
@@ -12,7 +12,7 @@
 
     <ul>
     {% for entry in entries %}
-        <li> {{ entry }} 
+    <li> {{ entry[0].upper() }} &rarr; {{ entry[1].upper() }}, ip = {{ entry[2] }}
     {% endfor %}
     </ul>
 

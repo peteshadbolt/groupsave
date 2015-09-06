@@ -79,7 +79,7 @@ def api(crs1, crs2, when):
     crs1 = fuzzy_match(crs1)[0]
     crs2 = fuzzy_match(crs2)[0]
     data = api_get(crs1, crs2, when)
-    return redirect(newurl, code=302)
+    return render_template("journey.html", **data)
 
 @app.route("/api/<crs1>/<crs2>/<when>", methods = ["GET", "PUT"])
 def api_json(crs1, crs2, when):
