@@ -58,7 +58,7 @@ def api_put(crs1, crs2, when, fake_ip=None):
 
 @app.route("/")
 def index():
-    if not redis.exists("cache:index"):
+    if not redis.exists("cache:index") or True:
         page = render_template("index.html", stations = stations.values())
         redis.set("cache:index", page)
         return page
@@ -72,18 +72,23 @@ def create():
     when = request.form["when"]
     api_put(crs1, crs2, when, fake_ip="micky mouse")
     newurl = "/{}/{}/{}".format(crs1, crs2, when)
-    print newurl
     return redirect(newurl, code=302)
 
-@app.route("/<crs1>/<crs2>/<when>", methods = ["GET", "PUT"])
+@app.route("/<crs1>/<crs2>/<when>", methods = ["GET"])
 def api(crs1, crs2, when):
     crs1 = fuzzy_match(crs1)[0]
     crs2 = fuzzy_match(crs2)[0]
-    if request.method=="PUT":
-        print "Put not implemented"
-        pass
     data = api_get(crs1, crs2, when)
     return render_template("journey.html", **data)
+
+@app.route("/api/<crs1>/<crs2>/<when>", methods = ["GET", "PUT"])
+def api_json(crs1, crs2, when):
+    crs1 = fuzzy_match(crs1)[0]
+    crs2 = fuzzy_match(crs2)[0]
+    if request.method == "PUT": 
+        api_put(crs1, crs2, when)
+    data = api_get(crs1, crs2, when)
+    return jsonify(data)
 
 @app.route("/populate")
 def populate():
