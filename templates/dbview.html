@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Redis view</title>
+    <link href="/static/debug.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <p>
+    {{dbsize}} keys in database
+    </p>
+
+    <p>
+    Here's a random sample:
+    </p>
+
+    <ul>
+    {% for key in keys %}
+    <li> {{ key[0] }} &rarr; {{ key[1] }}: 
+    <ul>
+    {% for ip, time in key[2] %}
+    <li>user {{ ip }} @ {{time}}
+    {% endfor %}
+    </ul>
+    {% endfor %}
+    </ul>
+
+  </body>
+</html>

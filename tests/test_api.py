@@ -3,7 +3,9 @@ from gs import app, redis
 import unittest
 import json
 import flask
-import time, arrow
+import time
+import arrow
+
 
 class APITestCase(unittest.TestCase):
 
@@ -19,17 +21,20 @@ class APITestCase(unittest.TestCase):
         """ See that Accept headers are obeyed """
         base = {"REMOTE_ADDR": "test"}
         headers = [("Accept", "application/json")]
-        response = self.app.get('/lds/shf/now', environ_base=base, headers=headers)
+        response = self.app.get(
+            '/lds/shf/now', environ_base=base, headers=headers)
         assert response.data.startswith("{")
         headers = [("Accept", "text/html")]
-        response = self.app.get('/lds/shf/now', environ_base=base, headers=headers)
+        response = self.app.get(
+            '/lds/shf/now', environ_base=base, headers=headers)
         assert response.data.startswith("<!DOCTYPE html>")
 
     def test_list_stations(self):
         """ See that we get the expected data when listing stations """
         base = {"REMOTE_ADDR": "test"}
         headers = [("Accept", "application/json")]
-        response = self.app.get('/lds/shf/now', environ_base=base, headers=headers)
+        response = self.app.get(
+            '/lds/shf/now', environ_base=base, headers=headers)
         assert response.status_code == 200
 
         data = json.loads(response.data)
@@ -50,11 +55,12 @@ class APITestCase(unittest.TestCase):
         headers = [("Accept", "application/json")]
 
         # Get an interval and check that we see the right number of people
-        data = json.loads(self.app.get("/lds/shf/now", environ_base=base, headers=headers).data)
-        assert data["count"]==app.config["LIFETIME_MINUTES"]+1
+        data = json.loads(
+            self.app.get("/lds/shf/now", environ_base=base, headers=headers).data)
+        assert data["count"] == app.config["LIFETIME_MINUTES"] + 1
         assert data["when"] == "now"
-        assert data["start"] == {"crs":"lds", "name":"Leeds"}
-        assert data["end"] == {"crs":"shf", "name":"Sheffield"}
+        assert data["start"] == {"crs": "lds", "name": "Leeds"}
+        assert data["end"] == {"crs": "shf", "name": "Sheffield"}
 
 
 if __name__ == '__main__':

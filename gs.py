@@ -84,7 +84,9 @@ def create():
     when = request.form["when"]
     api_put(crs1, crs2, when, fake_ip="micky mouse")
     newurl = "/{}/{}/{}".format(crs1, crs2, when)
-    return redirect(newurl, code=302)
+
+    data = api_get(crs1, crs2, when)
+    return render_template("journey.html", **data)
 
 
 @app.route("/<crs1>/<crs2>", methods=["GET", "PUT"])
@@ -92,24 +94,47 @@ def create():
 def api(crs1, crs2, when="now"):
     crs1 = fuzzy_match(crs1)[0]
     crs2 = fuzzy_match(crs2)[0]
-    data = api_get(crs1, crs2, when)
 
     if request.method == "PUT":
         api_put(crs1, crs2, when)
 
+    data = api_get(crs1, crs2, when)
     if request_wants_json():
         return jsonify(data)
     else:
         return render_template("journey.html", **data)
 
 @app.route("/populate")
-def populate():
+def populate(N = 10000):
+    """ Prepopulate the database """
     keys = stations.keys()
-    entries = [("lds",  random.choice(keys), random.randint(0, 100))
-               for i in range(1000)]
-    for a, b, ip in entries:
-        api_put(a, b, "now", fake_ip=ip)
-    return render_template("populate.html", entries=entries)
+    now = arrow.now()
+    p = redis.pipeline()
+    for i in range(N):
+        a = "lds"
+        b = random.choice(keys)
+        key = "{}:{}".format(a, b)
+        ip = random.randint(0, 100)
+        start_time = now.replace(minutes = random.randint(0, 1000)).timestamp
+        p.zadd(key, start_time, ip)
+    p.execute()
+    return redirect("/dbview")
+
+@app.route("/dbview")
+def dbview(N=100):
+    """ View the contents of the database """
+    dbsize = redis.dbsize()
+    keys = stations.keys()
+    data = []
+    for i in range(N):
+        a = "lds"
+        b = random.choice(keys)
+        key = "{}:{}".format(a, b)
+        allips = redis.zrange(key, 0, -1, withscores=True)
+        allips = [(ip, arrow.get(time).humanize()) for ip, time in allips]
+        data.append((stations[a], stations[b], allips))
+
+    return render_template("dbview.html", dbsize=dbsize, keys=data)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
