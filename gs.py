@@ -6,13 +6,24 @@ import arrow
 import re
 import random
 
+# Monkey patch arrow's terminology
 arrow.locales.EnglishLocale.timeframes["now"] = "now"
 
 # Boot the app
 app = Flask(__name__)
 app.config.from_pyfile("settings.cfg")
-redis = StrictRedis(app.config["REDIS_HOST"], app.config["REDIS_PORT"], db=0, password=app.config["REDIS_PASSWORD"])
+redis = StrictRedis(app.config["REDIS_HOST"], 
+                    app.config["REDIS_PORT"], 
+                    db=0, 
+                    password=app.config["REDIS_PASSWORD"])
 
+def request_wants_json():
+    """ Nicked from http://flask.pocoo.org/snippets/45/ """
+    best = request.accept_mimetypes \
+        .best_match(["application/json", "text/html"])
+    return best == "application/json" and \
+        request.accept_mimetypes[best] > \
+        request.accept_mimetypes["text/html"]
 
 def parse_time(s, now=None):
     """ Get a time in the future from a little string """
@@ -41,6 +52,7 @@ def api_get(crs1, crs2, when):
             "end": {"crs": crs2, "name": name2},
             "count": count, "ips": ips, "when": when.humanize()}
 
+
 def api_put(crs1, crs2, when, fake_ip=None):
     """ Register an IP at a given time """
     key = "{}:{}".format(crs1, crs2)
@@ -59,7 +71,7 @@ def api_put(crs1, crs2, when, fake_ip=None):
 @app.route("/")
 def index():
     if not redis.exists("cache:index"):
-        page = render_template("index.html", stations = stations.values())
+        page = render_template("index.html", stations=stations.values())
         redis.set("cache:index", page)
         return page
     else:
@@ -74,29 +86,30 @@ def create():
     newurl = "/{}/{}/{}".format(crs1, crs2, when)
     return redirect(newurl, code=302)
 
-@app.route("/<crs1>/<crs2>/<when>", methods = ["GET"])
-def api(crs1, crs2, when):
-    crs1 = fuzzy_match(crs1)[0]
-    crs2 = fuzzy_match(crs2)[0]
-    data = api_get(crs1, crs2, when)
-    return render_template("journey.html", **data)
 
-@app.route("/api/<crs1>/<crs2>/<when>", methods = ["GET", "PUT"])
-def api_json(crs1, crs2, when):
+@app.route("/<crs1>/<crs2>", methods=["GET", "PUT"])
+@app.route("/<crs1>/<crs2>/<when>", methods=["GET", "PUT"])
+def api(crs1, crs2, when="now"):
     crs1 = fuzzy_match(crs1)[0]
     crs2 = fuzzy_match(crs2)[0]
-    if request.method == "PUT": 
-        api_put(crs1, crs2, when)
     data = api_get(crs1, crs2, when)
-    return jsonify(data)
+
+    if request.method == "PUT":
+        api_put(crs1, crs2, when)
+
+    if request_wants_json():
+        return jsonify(data)
+    else:
+        return render_template("journey.html", **data)
 
 @app.route("/populate")
 def populate():
     keys = stations.keys()
-    entries = [("lds",  random.choice(keys), random.randint(0,100)) for i in range(1000)]
+    entries = [("lds",  random.choice(keys), random.randint(0, 100))
+               for i in range(1000)]
     for a, b, ip in entries:
-        api_put(a, b, "now", fake_ip = ip)
-    return render_template("populate.html", entries = entries)
+        api_put(a, b, "now", fake_ip=ip)
+    return render_template("populate.html", entries=entries)
 
-if __name__=="__main__":
-    app.run(host= "0.0.0.0")
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
